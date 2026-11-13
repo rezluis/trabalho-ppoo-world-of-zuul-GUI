@@ -1,5 +1,3 @@
-import java.util.List;
-
 /**
  * Representa um mapa com todos os itens que participam da simulacao
  * @author David J. Barnes and Michael Kolling and Luiz Merschmann
@@ -94,19 +92,6 @@ public class Mapa {
     public boolean estaDentro(int x, int y) {
         return x >= 0 && x < largura
             && y >= 0 && y < altura;
-    }
-
-    public List<Posicao> encontrarCaminho(
-            Posicao origem,
-            Posicao destino) {
-
-        HeuristicaAEstrela heuristica =
-            new HeuristicaAEstrela(this);
-
-        return heuristica.encontrarCaminho(
-            origem,
-            destino
-        );
     }
     
 }
