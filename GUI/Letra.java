@@ -1,12 +1,10 @@
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class Letra {
-    private Posicao posicaoOrigem;
-    private Image imagem;
+public class Letra extends ItemMapa{
 
     public Letra(Posicao posicao, char letra) {
-        this.posicaoOrigem = posicao;
+        super(posicao);
         imagem = charParaImagem(letra);
     }
 
@@ -38,6 +36,11 @@ public class Letra {
         g.dispose();
 
         return imagem;
+    }
+
+    @Override
+    public boolean bloqueiaPassagem() {
+        return false;
     }
     
 }

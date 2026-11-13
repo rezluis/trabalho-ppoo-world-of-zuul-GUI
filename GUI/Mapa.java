@@ -5,9 +5,8 @@ import java.util.List;
  * @author David J. Barnes and Michael Kolling and Luiz Merschmann
  */
 public class Mapa {
-    private Jogador[][] jogador;
-    private Parede[][] parede;
-    private Letra[][] letreiro;
+    private ItemMapa[][] cenario;
+    private Jogador jogador;
     private int largura;
     private int altura;
     
@@ -22,9 +21,7 @@ public class Mapa {
     public Mapa(int largura, int altura) {
         this.largura = largura;
         this.altura = altura;
-        jogador = new Jogador[largura][altura];
-        parede = new Parede[largura][altura];
-        letreiro = new Letra[largura][altura];
+        cenario = new ItemMapa[largura][altura];
         adicionarParede();
         adicionarLetreiro();
     }
@@ -68,7 +65,7 @@ public class Mapa {
         char[] letras = {'Q', 'U', 'A', 'R', 'T', 'O', '1','Q', 'U', 'A', 'R', 'T', 'O', '2','W','C','1','W','C','2','S','A','L','A','J', 'A', 'N', 'T', 'A', 'R', 'C', 'O', 'Z', 'I', 'N', 'H', 'A', 'S', 'A', 'L', 'A','T','V','A','R','E','A','S','E','R','V','I','Ç','O','C', 'O', 'R', 'R', 'E', 'D', 'O', 'R'};
 
         for (int i = 0; i < posicoes.length; i++) {
-            letreiro[posicoes[i].getX()][posicoes[i].getY()] = new Letra(posicoes[i], letras[i]);
+            cenario[posicoes[i].getX()][posicoes[i].getY()] = new Letra(posicoes[i], letras[i]);
         }
     }
 
@@ -132,7 +129,7 @@ public class Mapa {
 
         for (Posicao posicao : posicoes2) {
             System.out.println("Adicionando parede em: " + posicao.getX() + ", " + posicao.getY());
-            parede[posicao.getX()][posicao.getY()] = new Parede(posicao);
+            cenario[posicao.getX()][posicao.getY()] = new Parede(posicao);
         }
     }
     /**
@@ -142,29 +139,20 @@ public class Mapa {
         this(LARGURA_PADRAO,ALTURA_PADRAO);
     }
     
-    public void adicionarItem(Jogador j){
-        jogador[j.getPosicaoOrigem().getX()][j.getPosicaoOrigem().getY()] = j;
-    }
-    
-    public void removerItem(Jogador j){
-        jogador[j.getPosicaoOrigem().getX()][j.getPosicaoOrigem().getY()] = null;
-    }
-    
-    public void atualizarMapa(Jogador j){
-        removerItem(j);
-        adicionarItem(j);
-    }
-    
-    public Jogador getJogador(int x, int y){
-        return jogador[x][y];
+    public void adicionarJogador(Jogador jogador) {
+        this.jogador = jogador;
     }
 
-    public Parede getParede(int x, int y){
-        return parede[x][y];
+    public void removerJogador() {
+        this.jogador = null;
     }
 
-    public Letra getLetra(int x, int y){
-        return letreiro[x][y];
+    public Jogador getJogador() {
+        return jogador;
+    }
+    
+    public ItemMapa getCenario(int x, int y){
+        return cenario[x][y];
     }
 
     public int getLargura() {
@@ -180,7 +168,8 @@ public class Mapa {
     }
 
     private boolean temParede(int x, int y) {
-        return parede[x][y] != null;
+        ItemMapa itemMapa = cenario[x][y];
+        return itemMapa != null && itemMapa.bloqueiaPassagem();
     }
     public boolean estaDentro(int x, int y) {
         return x >= 0 && x < largura

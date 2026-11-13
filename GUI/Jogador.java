@@ -5,18 +5,18 @@ import javax.swing.ImageIcon;
  * Representa o jogador
  * @author David J. Barnes and Michael Kolling and Luiz Merschmann
  */
-public class Jogador {
-    private Posicao posicaoOrigem;
+public class Jogador extends ItemMapa{
+
     private Posicao posicaoDestino;
-    private Image imagem;
 
     public Jogador(){
+        super(null);
         posicaoDestino = null;
         imagem = new ImageIcon(getClass().getResource("/Imagens/pessoa.png")).getImage();
     }
     
     public Jogador(Posicao localizacao) {
-        this.posicaoOrigem = localizacao;
+        super(localizacao);
         posicaoDestino = null;
         imagem = new ImageIcon(getClass().getResource("/Imagens/pessoa.png")).getImage();
     }
@@ -46,5 +46,10 @@ public class Jogador {
         if(destino != null){
             setPosicaoOrigem(proximaLocalizacao);
         }
+    }
+
+    @Override
+    public boolean bloqueiaPassagem() {
+        return false;
     } 
 }
