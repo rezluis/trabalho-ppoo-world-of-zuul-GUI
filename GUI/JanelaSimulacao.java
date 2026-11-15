@@ -1,4 +1,8 @@
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.*;
 
 /**
@@ -8,37 +12,102 @@ import javax.swing.*;
 public class JanelaSimulacao extends JFrame{
     private Mapa mapa;
     private VisaoMapa visaoMapa;
-    
+    private JLabel status;
+    /** Uma imagem por simbolo, criada na primeira vez e reaproveitada. */
+    private final Map<Character, Image> imagens = new HashMap<>();
+
     public JanelaSimulacao(Mapa mapa){
         this.mapa = mapa;
         visaoMapa = new VisaoMapa(mapa.getLargura(),mapa.getAltura());
-        getContentPane().add(visaoMapa);
+        status = new JLabel(" ");
+        getContentPane().add(visaoMapa, BorderLayout.CENTER);
+        getContentPane().add(status, BorderLayout.SOUTH);
         setTitle("World of Zuul");
         setSize(500,500);
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
-    
+
     /**
      * Mostra o estado atual do mapa.
      */
-    public void executarAcao(){
+    public void atualizar(){
         visaoMapa.preparePaint();
         for(int i = 0; i < mapa.getLargura(); i++){
             for(int j = 0; j < mapa.getAltura(); j++){
-                if(mapa.getCenario(i, j) != null){//Se existir algum objeto na posicao (i,j)
-                    ItemMapa cenario = mapa.getCenario(i, j);
-                    Posicao localizacao = cenario.getPosicaoOrigem();
-                    visaoMapa.desenharImagem(localizacao.getX(), localizacao.getY(), cenario.getImagem());
+                ItemMapa item = mapa.getItem(i, j);
+                if(item != null){
+                    desenhar(item);
                 }
             }
         }
         Jogador jogador = mapa.getJogador();
         if (jogador != null) {
-            visaoMapa.desenharImagem(jogador.getPosicaoOrigem().getX(), jogador.getPosicaoOrigem().getY(), jogador.getImagem());
+            desenhar(jogador);
         }
-        
+
         visaoMapa.repaint();
+    }
+
+    /**
+     * Exibe uma mensagem na barra de status da janela.
+     */
+    public void mostrarMensagem(String mensagem) {
+        SwingUtilities.invokeLater(() -> status.setText(mensagem));
+    }
+
+    private void desenhar(ItemMapa item) {
+        Posicao posicao = item.getPosicao();
+        visaoMapa.desenharImagem(posicao.getX(), posicao.getY(), imagemDe(item));
+    }
+
+    private Image imagemDe(ItemMapa item) {
+        return imagens.computeIfAbsent(item.getSimbolo(), simbolo -> criarImagem(simbolo));
+    }
+
+    /**
+     * A interface decide como cada item aparece a partir do simbolo dele.
+     * Simbolos sem imagem propria sao desenhados como texto.
+     */
+    private Image criarImagem(char simbolo) {
+        switch (simbolo) {
+            case Parede.SIMBOLO:
+                return carregarImagem("/Imagens/tijolo.png");
+            case Jogador.SIMBOLO:
+                return carregarImagem("/Imagens/pessoa.png");
+            default:
+                return desenharCaractere(simbolo);
+        }
+    }
+
+    private Image carregarImagem(String caminho) {
+        URL url = JanelaSimulacao.class.getResource(caminho);
+        if (url == null) {
+            throw new IllegalStateException("Imagem nao encontrada: " + caminho);
+        }
+        return new ImageIcon(url).getImage();
+    }
+
+    private static Image desenharCaractere(char c) {
+        int largura = 40;
+        int altura = 40;
+
+        BufferedImage imagem = new BufferedImage(
+            largura,
+            altura,
+            BufferedImage.TYPE_INT_ARGB
+        );
+
+        Graphics2D g = imagem.createGraphics();
+
+        g.setFont(new Font("Arial", Font.BOLD, 30));
+        g.setColor(Color.BLACK);
+
+        g.drawString(String.valueOf(c), 5, 30);
+
+        g.dispose();
+
+        return imagem;
     }
 
     /**

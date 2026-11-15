@@ -1,4 +1,4 @@
-import java.util.Random;
+import java.util.Objects;
 
 /**
  * Representa uma localização no mapa
@@ -7,10 +7,9 @@ import java.util.Random;
 public class Posicao {
     private int x;
     private int y;
-    private static Random rand = new Random();
-    
+
     /**
-     * Representa uma localização na cidade
+     * Cria uma posicao no mapa.
      * @param x Coordenada x: deve ser maior ou igual a 0.
      * @param y Coordenada y: deve ser maior ou igual a 0.
      */
@@ -26,38 +25,10 @@ public class Posicao {
     public int getY() {
         return y;
     }
-    
+
     /**
-     * Gera a localizacao para se mover visando alcançar o destino
-     * @param localizacaoDestino: localizacao que se deseja alcancar.
-     * @return Localizacao para onde se deve ir
-     */
-    public Posicao proximaLocalizacao(Posicao localizacaoDestino){
-        if(localizacaoDestino.equals(this)){//Verifica se já alcancou o destino
-            return localizacaoDestino;
-        }else{
-            int destX = localizacaoDestino.getX();
-            int destY = localizacaoDestino.getY();
-            int deslocX = x < destX ? 1 : x > destX ? -1 : 0;//Deslocamento de 1 ou 0 ou -1 posição em x
-            int deslocY = y < destY ? 1 : y > destY ? -1 : 0;//Deslocamento de 1 ou 0 ou -1 posição em y
-            Posicao novaLocalizacao;
-            if(deslocX != 0 && deslocY != 0){//Se nenhuma coordenada coincide com a localizacao destino
-                if(rand.nextInt(2) == 0){//Atualizar x
-                    novaLocalizacao = new Posicao(x + deslocX, y);
-                }else{//Atualizar y
-                    novaLocalizacao = new Posicao(x, y + deslocY);
-                }
-            }else{
-                if(deslocX != 0) novaLocalizacao = new Posicao(x + deslocX, y);
-                else novaLocalizacao = new Posicao(x, y + deslocY);
-            }
-            return novaLocalizacao;
-        }
-    }
-    
-    /**
-     * Verificacao de igualdade de conteudo de objetos do tipo Localizacao.
-     * @return true: se a localizacao é igual.
+     * Verificacao de igualdade de conteudo de objetos do tipo Posicao.
+     * @return true: se a posicao é igual.
      *         false: caso contrario.
      */
     @Override
@@ -71,9 +42,19 @@ public class Posicao {
             return x == outro.x && y == outro.y;
         }
     }
-    
+
     /**
-     * @return A representacao da localizacao.
+     * Codigo hash coerente com o equals: posicoes iguais geram o mesmo valor.
+     * Necessario para usar Posicao em HashSet e HashMap (ex.: HeuristicaAEstrela).
+     * @return Codigo hash calculado a partir de x e y.
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
+    }
+
+    /**
+     * @return A representacao da posicao.
      */
     @Override
     public String toString()

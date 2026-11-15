@@ -1,55 +1,34 @@
-import java.awt.Image;
-import javax.swing.ImageIcon;
-
 /**
  * Representa o jogador
  * @author David J. Barnes and Michael Kolling and Luiz Merschmann
  */
 public class Jogador extends ItemMapa{
 
-    private Posicao posicaoDestino;
+    public static final char SIMBOLO = '@';
 
+    /**
+     * Cria o jogador ainda fora do mapa; a posicao e definida por moverPara.
+     */
     public Jogador(){
         super(null);
-        posicaoDestino = null;
-        imagem = new ImageIcon(getClass().getResource("/Imagens/pessoa.png")).getImage();
-    }
-    
-    public Jogador(Posicao localizacao) {
-        super(localizacao);
-        posicaoDestino = null;
-        imagem = new ImageIcon(getClass().getResource("/Imagens/pessoa.png")).getImage();
     }
 
-    public Posicao getPosicaoOrigem() {
-        return posicaoOrigem;
-    }
-
-    public Posicao getPosicaoDestino() {
-        return posicaoDestino;
-    }
-    
-    public Image getImagem(){
-        return imagem;
-    }
-
-    public void setPosicaoOrigem(Posicao localizacaoAtual) {
-        this.posicaoOrigem = localizacaoAtual;
-    }
-
-    public void setPosicaoDestino(Posicao localizacaoDestino) {
-        this.posicaoDestino = localizacaoDestino;
-    }
-    
-    public void executarAcao(Posicao proximaLocalizacao) {
-        Posicao destino = getPosicaoDestino();
-        if(destino != null){
-            setPosicaoOrigem(proximaLocalizacao);
-        }
+    /**
+     * Coloca o jogador na posicao informada: a origem do trajeto
+     * ou o proximo passo do caminho.
+     * @param novaPosicao posicao para onde o jogador vai.
+     */
+    public void moverPara(Posicao novaPosicao) {
+        setPosicao(novaPosicao);
     }
 
     @Override
     public boolean bloqueiaPassagem() {
         return false;
-    } 
+    }
+
+    @Override
+    public char getSimbolo() {
+        return SIMBOLO;
+    }
 }

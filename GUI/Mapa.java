@@ -8,55 +8,21 @@ public class Mapa {
     private int largura;
     private int altura;
 
-    private static final String[] PLANTA = {
-        "####################",  // y = 0
-        "#      #    #      #",  // y = 1
-        "#QUARTO1 C  QUARTO2#",  // y = 2
-        "#      # O  #      #",  // y = 3
-        "######## R  ########",  // y = 4
-        "#      # R  #      #",  // y = 5
-        "# WC1    E    WC2  #",  // y = 6
-        "#      # D  #      #",  // y = 7
-        "######## O  ########",  // y = 8
-        "# SALA # R  #      #",  // y = 9
-        "#JANTAR     COZINHA#",  // y = 10
-        "#      #    #      #",  // y = 11
-        "##     ######     ##",  // y = 12
-        "#        #    AREA #",  // y = 13
-        "#SALA TV #  SERVIÇO#",  // y = 14
-        "#        #         #",  // y = 15
-        "####################",   // y = 16
-    };
-    
     /**
-     * Cria mapa para alocar itens da simulacao.
-     * @param largura: largura da área de simulacao.
-     * @param altura: altura da área de simulação.
+     * Cria o mapa a partir de uma planta: o tamanho e os itens vem dela.
+     * @param planta descricao da casa a ser carregada.
      */
-    public Mapa() {
-        largura = PLANTA[0].length(); 
-        altura = PLANTA.length;
+    public Mapa(PlantaCasa planta) {
+        largura = planta.getLargura();
+        altura = planta.getAltura();
         cenario = new ItemMapa[largura][altura];
-        carregarPlanta();
-    }
-
-    private void carregarPlanta() {
-        for (int y = 0; y < PLANTA.length; y++) {
-            for (int x = 0; x < PLANTA[y].length(); x++) {
-                char c = PLANTA[y].charAt(x);
-                if (c == '#') {
-                    cenario[x][y] = new Parede(new Posicao(x, y));
-                } else if ( c != ' ') {
-                    cenario[x][y] = new Letra(new Posicao(x, y), c);
-                }
+        for (int x = 0; x < largura; x++) {
+            for (int y = 0; y < altura; y++) {
+                cenario[x][y] = planta.criarItem(x, y);
             }
         }
     }
 
-    /**
-     * Cria mapa com tamanho padrao.
-     */
-    
     public void adicionarJogador(Jogador jogador) {
         this.jogador = jogador;
     }
@@ -68,8 +34,11 @@ public class Mapa {
     public Jogador getJogador() {
         return jogador;
     }
-    
-    public ItemMapa getCenario(int x, int y){
+
+    /**
+     * @return o item do cenario na posicao (x, y), ou null se ela estiver vazia.
+     */
+    public ItemMapa getItem(int x, int y){
         return cenario[x][y];
     }
 
@@ -82,10 +51,10 @@ public class Mapa {
     }
 
     public boolean podePassar(int x, int y) {
-        return estaDentro(x, y) && !temParede(x, y);
+        return estaDentro(x, y) && !temObstaculo(x, y);
     }
 
-    private boolean temParede(int x, int y) {
+    private boolean temObstaculo(int x, int y) {
         ItemMapa itemMapa = cenario[x][y];
         return itemMapa != null && itemMapa.bloqueiaPassagem();
     }
@@ -93,5 +62,5 @@ public class Mapa {
         return x >= 0 && x < largura
             && y >= 0 && y < altura;
     }
-    
+
 }
